@@ -192,7 +192,7 @@ const swap = (arr, i, j) => {
 var reverseWords = function (s) {
   // return s.trim().split(/\s+/).reverse().join(' ');
   let string = s.trim().split(/\s+/);
-  console.log(string)
+  console.log(string);
   let i = 0;
   let j = string.length - 1;
   while (i < j) {
@@ -202,4 +202,74 @@ var reverseWords = function (s) {
   }
   return string.join(" ");
 };
-console.log(reverseWords("the sky is blue"))
+console.log(reverseWords("the sky is blue"));
+
+/**
+ * 704. 二分查找
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var search = function (nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2);
+    if (nums[mid] === target) {
+      return mid;
+    } else if (nums[mid] > target) {
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+  return -1;
+};
+
+console.log(search([-1, 0, 3, 5, 9, 12], 9));
+
+/**35. 搜索插入位置
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+ */
+var searchInsert = function (nums, target) {
+  let left = 0;
+  let right = nums.length - 1;
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2);
+    if (nums[mid] === target) {
+      return mid;
+    } else if (nums[mid] > target) {
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+  return left;
+};
+console.log(searchInsert([1, 3, 5, 6], 7));
+
+/** 69 sqrt(x)
+ * 给你一个非负整数 x ，计算并返回 x 的 算术平方根 。
+ * 由于返回类型是整数，结果只保留 整数部分 ，小数部分将被 舍去 。
+ * 注意：不允许使用任何内置指数函数和算符，例如 pow(x, 0.5) 或者 x ** 0.5 。
+ * @param {number} x
+ * @return {number}
+ */
+// var mySqrt = function (x) {
+//   let left = 0;
+//   let right = x;
+//   while (left <= right) {
+//     let mid = Math.floor((left + right) / 2);
+//     if (mid * mid === x) {
+//       return mid;
+//     } else if (mid * mid > x) {
+//       right = mid - 1;
+//     } else {
+//       left = mid + 1;
+//     }
+//   }
+//   return right;
+// };
+// console.log(mySqrt(0), "mySqrt");
