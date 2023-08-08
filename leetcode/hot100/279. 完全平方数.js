@@ -21,12 +21,13 @@ var numSquares = function (n) {
     // const sqrt = Math.floor(Math.sqrt(i))
     // dp[i] = dp[i - sqrt * sqrt] + 1
     dp[i] = i; // 最坏的情况就是每次+1
-    for (let j = 1; i - j * j >= 0; j++) {
+    for (let j = 1; i - j * j >= 0; j++) {  // 在轮训一次 注意dp[i] = dp[i - sqrt * sqrt] + 1和dp[i] = Math.min(dp[i], dp[i - j * j] + 1)的区别
+      console.log('dp[i - j * j]', dp[i - j * j], i, j, i - j * j, 'dp[i]', dp[i], Math.min(dp[i], dp[i - j * j] + 1))
       dp[i] = Math.min(dp[i], dp[i - j * j] + 1); // 动态转移方程
     }
   }
   // console.log(dp)
   return dp[n]
 };
-// console.log(numSquares(12)) // 3 4+4+4
+// console.log(numSquares(12)) // 3 4+4+4 dp(12) = dp(8) + 1 = 2 + 1 = 3
 console.log(numSquares(13)) // 2 4+9
