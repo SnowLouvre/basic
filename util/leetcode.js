@@ -273,3 +273,19 @@ console.log(searchInsert([1, 3, 5, 6], 7));
 //   return right;
 // };
 // console.log(mySqrt(0), "mySqrt");
+
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+  const n = prices.length
+  const dp = new Array(2).fill(0).map(item => new Array(n).fill(0))
+  dp[0][0] = 0;
+  dp[0][1] = -prices[0]
+  for (let i = 1; i < n; i++) {
+    dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i])
+    dp[i][1] = Math.min(prices[i - 1][0] - prices[i], dp[i - 1][1])
+    return dp[n - 1][0]
+  }
+};
