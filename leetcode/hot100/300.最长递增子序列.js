@@ -34,6 +34,7 @@ var lengthOfLIS = function(nums) {
             let right = tail.length - 1;
             while (left < right) {
                 let mid = (left + right) >> 1;
+                console.log(left, 'left', right, 'right', mid, tail[mid], nums[i])
                 if (tail[mid] < nums[i]) {
                     left = mid + 1;
                 } else {
