@@ -126,3 +126,22 @@ function getValue(target, valuePath = "", defaultValue) {
 // console.log(getValue(object, "a[0].b.c", 0)); // 输出3
 // console.log(getValue(array, "[0].a.b[0]", 12)); // 输出 1
 // console.log(getValue(array, "[0].a.b[0].c", 12)); // 输出 12
+
+
+// 设计一个sum函数，使其满足以下要求
+// sum(1, 2).sumOf() // 返回 3
+// sum(1, 2)(3).sumOf() // 返回 6
+function sum(...args) {
+  let total = args.reduce((acc, cur) => acc + cur, 0);
+
+  function innerSum(...nextArgs) {
+      total += nextArgs.reduce((acc, cur) => acc + cur, 0);
+      return innerSum;
+  }
+
+  innerSum.sumOf = () => total;
+  return innerSum;
+}
+
+console.log(sum(1, 2).sumOf()); // 输出 3
+console.log(sum(1, 2)(3).sumOf()); // 输出 6
