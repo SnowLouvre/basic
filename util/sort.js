@@ -3,7 +3,7 @@ var search = function (nums, target) {
   let left = 0,
     right = nums.length - 1;
   while (left <= right) {
-    let mid = Math.floor((left + right) / 2);
+    let mid = Math.floor((left + right) / 2);  // mid = left + ((right - left) >> 1);
     if (nums[mid] === target) {
       return mid;
     } else if (target < nums[mid]) {
@@ -30,7 +30,6 @@ function quickSort(array) {
     if (left < right) {
       // 进行分区，获取基准点
       const partitionIndex = partition(array, left, right);
-      console.log(partitionIndex, 'partitionIndex', array)
       // 以基准值为中心，左右各种再递归调用快速排序
       _quickSort(array, left, partitionIndex - 1);
       _quickSort(array, partitionIndex + 1, right);

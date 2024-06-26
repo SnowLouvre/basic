@@ -31,7 +31,7 @@ function arrToTree(data) {
   data.forEach((ele) => {
     if (ele.pid === "") return tree.push(nodeObj(ele)); // 在树形数组上查找ele的父级节点对象
     const obj = getElementById(tree, ele.pid); // 如果找到了，添加到这个节点的children属性中
-    console.log(obj, 'obj', ele.pid, ele)
+    console.log(obj, "obj", ele.pid, ele);
     obj && obj.children.push(nodeObj(ele));
   });
 
@@ -127,7 +127,6 @@ function getValue(target, valuePath = "", defaultValue) {
 // console.log(getValue(array, "[0].a.b[0]", 12)); // 输出 1
 // console.log(getValue(array, "[0].a.b[0].c", 12)); // 输出 12
 
-
 // 设计一个sum函数，使其满足以下要求
 // sum(1, 2).sumOf() // 返回 3
 // sum(1, 2)(3).sumOf() // 返回 6
@@ -135,8 +134,8 @@ function sum(...args) {
   let total = args.reduce((acc, cur) => acc + cur, 0);
 
   function innerSum(...nextArgs) {
-      total += nextArgs.reduce((acc, cur) => acc + cur, 0);
-      return innerSum;
+    total += nextArgs.reduce((acc, cur) => acc + cur, 0);
+    return innerSum;
   }
 
   innerSum.sumOf = () => total;
@@ -145,3 +144,97 @@ function sum(...args) {
 
 console.log(sum(1, 2).sumOf()); // 输出 3
 console.log(sum(1, 2)(3).sumOf()); // 输出 6
+
+function createElement(type, props, ...children) {
+  return { type, props: props || {}, children };
+}
+function parseHTML(html) {
+  const template = document.createElement("template");
+  template.innerHTML = html.trim();
+  return template.content.firstChild;
+}
+function constructVirtualDOM(node) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const textContent = node.textContent.trim();
+    if (textContent) {
+      return textContent;
+    }
+    return null;
+  }
+  const { nodeName, attributes, childNodes } = node;
+  const props = {};
+  for (let attr of attributes) {
+    props[attr.name] = attr.value;
+  }
+  const children = [];
+  for (let child of childNodes) {
+    const childNode = constructVirtualDOM(child);
+    if (childNode !== null) {
+      children.push(childNode);
+    }
+  }
+  return createElement(nodeName.toLowerCase(), props, ...children);
+}
+// Example usage
+const htmlString = `
+  <div id="container">
+      <h1 class="title">Hello, World!</h1>
+      <p>This is a paragraph.</p>
+  </div>
+`;
+// const rootNode = parseHTML(htmlString);
+// const virtualDOM = constructVirtualDOM(rootNode);
+
+// console.log(virtualDOM, rootNode, htmlString);
+
+// 顺时针螺旋矩阵
+function spiralOrder(matrix) {
+  if (matrix.length === 0) return [];
+  
+  let result = [];
+  let rows = matrix.length;
+  let cols = matrix[0].length;
+  let left = 0, right = cols - 1, top = 0, bottom = rows - 1;
+
+  while (left <= right && top <= bottom) {
+      // 从左到右遍历上边界
+      for (let col = left; col <= right; col++) {
+          result.push(matrix[top][col]);
+      }
+      top++;
+
+      // 从上到下遍历右边界
+      for (let row = top; row <= bottom; row++) {
+          result.push(matrix[row][right]);
+      }
+      right--;
+
+      // 确保剩下的行仍然存在
+      if (top <= bottom) {
+          // 从右到左遍历下边界
+          for (let col = right; col >= left; col--) {
+              result.push(matrix[bottom][col]);
+          }
+          bottom--;
+      }
+
+      // 确保剩下的列仍然存在
+      if (left <= right) {
+          // 从下到上遍历左边界
+          for (let row = bottom; row >= top; row--) {
+              result.push(matrix[row][left]);
+          }
+          left++;
+      }
+  }
+
+  return result;
+}
+
+// 示例用法
+let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
+console.log(spiralOrder(matrix)); // 输出 [1, 2, 3, 6, 9, 8, 7, 4, 5]

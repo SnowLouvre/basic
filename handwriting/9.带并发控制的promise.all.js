@@ -95,67 +95,132 @@
 // //并发请求已经全部发起
 // //请求已经全部结束
 
-function promiseAllWithLimit(promises, limit) {
+// function promiseAllWithLimit(promises, limit) {
+//   return new Promise((resolve, reject) => {
+//     if (!promises || !Array.isArray(promises)) {
+//       reject(new Error("Invalid input"));
+//       return;
+//     }
+
+//     const results = [];
+//     let index = 0;
+//     let running = 0;
+
+
+//     function runPromise() {
+//       console.log(running, 'running', promises)
+//       if (index >= promises.length) {
+//         if (running === 0) {
+//           resolve(results);
+//         }
+//         return;
+//       }
+
+//       const current = index++;
+//       const promise = promises[current];
+
+//       running++;
+
+//       promise
+//         .then((result) => {
+//           results[current] = result;
+//         })
+//         .catch((error) => {
+//           // 如果某个 Promise 失败，直接 reject，并停止后续的任务
+//           reject(error);
+//           return;
+//         })
+//         .finally(() => {
+//           running--;
+//           runPromise();
+//         });
+//     }
+
+//     // 初始运行 limit 个 Promise
+//     for (let i = 0; i < Math.min(limit, promises.length); i++) {
+//       runPromise();
+//     }
+//   });
+// }
+
+// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// // 示例用法
+// const promises = [
+//   // delay(6000).then(() => "Promise 1 resolved"),
+//   // delay(2000).then(() => "Promise 2 resolved"),
+//   // delay(3000).then(() => "Promise 3 resolved"),
+//   // delay(4000).then(() => "Promise 4 resolved"),
+//   // delay(5000).then(() => "Promise 5 resolved"),
+//   // delay(1000).then(() => "Promise 6 resolved"),
+// ];
+
+// promiseAllWithLimit(promises, 3)
+//   .then((results) => {
+//     console.log("All promises resolved:", results);
+//   })
+//   .catch((error) => {
+//     console.error("At least one promise rejected:", error);
+//   });
+
+
+function promiseAllWithConcurrencyLimit(promises, limit) {
+  let activePromises = 0;
+  let currentIndex = 0;
+  const results = [];
+
   return new Promise((resolve, reject) => {
-    if (!promises || !Array.isArray(promises)) {
-      reject(new Error("Invalid input"));
-      return;
-    }
-
-    const results = [];
-    let index = 0;
-    let running = 0;
-
-    function runPromise() {
-      if (index >= promises.length) {
-        if (running === 0) {
-          resolve(results);
-        }
-        return;
+      function runNext() {
+        console.log('当前并发度：', activePromises, promises, currentIndex, results);
+          if (currentIndex >= promises.length && activePromises === 0) {
+              return resolve(results);
+          }
+          
+          while (activePromises < limit && currentIndex < promises.length) {
+              const index = currentIndex++;
+              activePromises++;
+              promises[index]()
+                  .then(result => {
+                      results[index] = result;
+                  })
+                  .catch(error => {
+                      return reject(error);
+                  })
+                  .finally(() => {
+                      activePromises--;
+                      runNext();
+                  });
+          }
       }
 
-      const current = index++;
-      const promise = promises[current];
-
-      running++;
-
-      promise
-        .then((result) => {
-          results[current] = result;
-        })
-        .catch((error) => {
-          // 如果某个 Promise 失败，直接 reject，并停止后续的任务
-          reject(error);
-          return;
-        })
-        .finally(() => {
-          running--;
-          runPromise();
-        });
-    }
-
-    // 初始运行 limit 个 Promise
-    for (let i = 0; i < Math.min(limit, promises.length); i++) {
-      runPromise();
-    }
+      runNext();
   });
 }
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-// 示例用法
-const promises = [
-  delay(6000).then(() => "Promise 1 resolved"),
-  delay(2000).then(() => "Promise 2 resolved"),
-  delay(3000).then(() => "Promise 3 resolved"),
-  delay(4000).then(() => "Promise 4 resolved"),
-  delay(5000).then(() => "Promise 5 resolved"),
-  delay(1000).then(() => "Promise 6 resolved"),
+// Example usage:
+
+// Mocking async functions
+const createAsyncTask = (time, result) => {
+  return () => new Promise((resolve) => {
+      setTimeout(() => {
+          resolve(result);
+      }, time);
+  });
+};
+
+// Array of async tasks
+const tasks = [
+  createAsyncTask(1000, 'Task 1'),
+  createAsyncTask(500, 'Task 2'),
+  createAsyncTask(300, 'Task 3'),
+  createAsyncTask(400, 'Task 4'),
+  createAsyncTask(700, 'Task 5')
 ];
 
-promiseAllWithLimit(promises, 3)
-  .then((results) => {
-    console.log("All promises resolved:", results);
+// Limit to 2 concurrent tasks
+promiseAllWithConcurrencyLimit(tasks, 2)
+  .then(results => {
+      console.log('All tasks completed:', results);
   })
-  .catch((error) => {
-    console.error("At least one promise rejected:", error);
+  .catch(error => {
+      console.error('Error in tasks:', error);
   });

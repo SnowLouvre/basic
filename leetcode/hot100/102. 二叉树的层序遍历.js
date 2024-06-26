@@ -50,3 +50,4 @@ var levelOrder = function (root) {
   }
   return ret;
 };
+console.log(levelOrder([3, 9, 20, null, null, 15, 7]))

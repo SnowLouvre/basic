@@ -24,7 +24,7 @@ let DFSdeepClone = (obj, visitedArr = []) => {
     console.log(index, "index", visitedArr, obj);
     _obj = isTypeOf(obj, "array") ? [] : {};
     if (~index) {
-      // 判断环状数据 ~-1 == 0 一个骚操作而已
+      // 判断环状数据 ~-1 == 0 一个骚操作而已 index !== -1
       _obj = visitedArr[index];
     } else {
       visitedArr.push(obj);
